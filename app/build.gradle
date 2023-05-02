@@ -3,6 +3,12 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// local.properties에서 선언한 값들을 불러와 주기 위함
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+
 android {
     namespace 'com.example.covid19_vaccin_center'
     compileSdk 33
@@ -15,6 +21,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "ENCODING_KEY", properties['encoding_key']
+        buildConfigField "String", "DECODING_KEY", properties['decoding_key']
     }
 
     buildTypes {
