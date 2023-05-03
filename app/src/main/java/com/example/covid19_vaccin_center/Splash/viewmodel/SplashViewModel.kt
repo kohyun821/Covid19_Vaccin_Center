@@ -1,54 +1,41 @@
 package com.example.covid19_vaccin_center.Splash.viewmodel
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.covid19_vaccin_center.Splash.data.Vaccine
-import com.example.covid19_vaccin_center.Splash.data.retrorit.ApiService
-import com.example.covid19_vaccin_center.Splash.data.retrorit.RetrofitObject
+import com.example.covid19_vaccin_center.Splash.data.dto.RetrofitObject
+import com.example.covid19_vaccin_center.Splash.data.entity.Vaccine
+import com.example.covid19_vaccin_center.Splash.data.repository.VaccineRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SplashViewModel(application: Application) : AndroidViewModel(application) {
-    private val apiService: ApiService = RetrofitObject.getApiService()
-    val progress = MutableLiveData<Int>()
+class SplashViewModel(private val repository: VaccineRepository) : ViewModel() {
 
-    init {
-        progress.value = 0
-    }
-
-    fun fetchVaccineData() {
-        Log.d("테스트","뷰모델 매소드 실행 완료")
+    fun fetchVaccines() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                var currentPage = 1
-                val perPage = 10
-                val totalPages = 10
-                while (currentPage <= totalPages) {
-                    try {
-                        val response = apiService.getInfo(currentPage, perPage)
-                        //TODO
-                    // 데이터 읽어오기+ROOM에 데이터 저장하기+프로그래스 바 구현
+            for (page in 1..10) {
+                withContext(Dispatchers.IO){
+                    val call = RetrofitObject.getApiService()
+                        .getInfo(page = page, perPage = 10)
 
-                        val newProgress = (currentPage * 100 / totalPages) * 0.8
-                        progress.postValue(newProgress.toInt())
-                    } catch (e: Exception) {
-                        Log.e("Error","SplashViewModel -> fetchVaccineData")
+                    val response = call.execute()
+
+                    if (response.isSuccessful) {
+                        val vaccines = response.body()?.data ?: emptyList()
+                        repository.insertVaccines(vaccines)
+                    } else {
+                        println("com.example.covid19_vaccin_center 실행 실패")
+                        Log.e("Vaccine","fetchVaccines의 error 실행")
                     }
-                    currentPage++//다음 페이지
                 }
-
-                while (progress.value!! < 80) {
-                    delay(100)
-                }
-
-                delay(400) // 100%를 위해 0.4초 대기
-                progress.postValue(100)
             }
         }
     }
+/*데이터가 잘 저장되어있는지 확인 하는 부분
+suspend fun getAllVaccines(): List<Vaccine> {
+return repository.getAllVaccines()
+}
+-> 필요는 없음*/
+
 }

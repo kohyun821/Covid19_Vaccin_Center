@@ -1,8 +1,13 @@
-package com.example.covid19_vaccin_center.Splash.data
+package com.example.covid19_vaccin_center.Splash.data.entity
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "vaccine")
 data class Vaccine(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     @SerializedName("centerName") val centerName:String,        //예방 접종 센터 명
     @SerializedName("address") val address:String,              //주소
     @SerializedName("facilityName") val facilityName:String,    //시설명
@@ -17,5 +22,6 @@ data class VaccineBody(
     @SerializedName("perPage") val perPage:Int,             //불러올 데이터
     @SerializedName("totalCount") val totalCount:Int,       //데이터 갯수
     @SerializedName("currentCount") val currentCount:Int,   //검색된 데이터 수
-    @SerializedName("matchCount") val matchCount:Int        //검색과 일치하는 데이터 수
+    @SerializedName("matchCount") val matchCount:Int,       //검색과 일치하는 데이터 수
+    @SerializedName("data") val data:List<Vaccine>
 )

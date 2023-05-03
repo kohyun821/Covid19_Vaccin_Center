@@ -1,4 +1,4 @@
-package com.example.covid19_vaccin_center.Splash.data.retrorit
+package com.example.covid19_vaccin_center.Splash.data.dto
 
 import com.example.covid19_vaccin_center.BuildConfig
 import retrofit2.Retrofit
@@ -12,7 +12,7 @@ object RetrofitObject{
             .build()
     }
 
-    fun getApiService():ApiService{
+    fun getApiService(): ApiService {
         return getRetrofit().create(ApiService::class.java)
     }
 }
