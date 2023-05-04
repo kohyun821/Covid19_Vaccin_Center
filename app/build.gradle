@@ -27,6 +27,9 @@ android {
         buildConfigField "String", "HEADER_ACCEPT", properties['header.accept']
         buildConfigField "String", "ENCODING_KEY", properties['encoding_key']
         buildConfigField "String", "DECODING_KEY", properties['decoding_key']
+
+        buildConfigField "String", "CLIENT_ID", properties['client_ID']
+        buildConfigField "String", "CLIENT_SECRET", properties['client_Secret']
     }
 
     buildFeatures {
@@ -104,4 +107,7 @@ dependencies {
     //hilt
     implementation "com.google.dagger:hilt-android:2.44"
     ksp "com.google.dagger:hilt-compiler:2.44"
+
+    // 네이버 지도 SDK
+    implementation 'com.naver.maps:map-sdk:3.16.2'
 }

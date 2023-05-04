@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Covid19_Vaccin_Center"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:appComponentFactory="your.new.value.here"
+        tools:replace="android:appComponentFactory">
         <activity
             android:name=".Map.view.MapActivity"
             android:exported="false" />
@@ -29,7 +31,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="false"></activity>
     </application>
 
 </manifest>
