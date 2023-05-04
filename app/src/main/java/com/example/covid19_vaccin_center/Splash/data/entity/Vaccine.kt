@@ -13,6 +13,7 @@ data class Vaccine(
     @SerializedName("facilityName") val facilityName:String,    //시설명
     @SerializedName("phoneNumber") val phoneNumber:String,      //사무실 전화번호
     @SerializedName("updatedAt") val updatedAt:String,          //업데이트 날
+    @SerializedName("centerType") val centerType:String,        //예방 접종 센터 유형
     @SerializedName("lat") val lat:String,                      //위도
     @SerializedName("lng") val lng:String                       //경도
 )

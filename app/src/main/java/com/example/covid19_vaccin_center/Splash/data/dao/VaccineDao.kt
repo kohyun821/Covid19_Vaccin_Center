@@ -10,7 +10,4 @@ import com.example.covid19_vaccin_center.Splash.data.entity.Vaccine
 interface VaccineDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVaccines(vaccines: List<Vaccine>)
-
-    @Query("SELECT * FROM vaccine")
-    suspend fun getAllVaccines(): List<Vaccine>
 }

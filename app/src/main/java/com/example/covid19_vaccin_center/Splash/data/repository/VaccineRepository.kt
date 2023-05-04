@@ -11,7 +11,4 @@ class VaccineRepository(private val context: Context) {
         vaccineDao.insertVaccines(vaccines)
     }
 
-    suspend fun getAllVaccines(): List<Vaccine> {
-        return vaccineDao.getAllVaccines()
-    }
 }
