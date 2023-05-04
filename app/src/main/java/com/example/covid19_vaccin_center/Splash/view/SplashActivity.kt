@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.ProgressBar
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.example.covid19_vaccin_center.Map.view.MapActivity
 import com.example.covid19_vaccin_center.R
@@ -19,9 +20,10 @@ class SplashActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SplashViewModel
     private lateinit var progressBar: ProgressBar
-
+    private lateinit var binding: SplashActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
         setContentView(R.layout.activity_splash)
 
         progressBar = findViewById(R.id.progressBar)

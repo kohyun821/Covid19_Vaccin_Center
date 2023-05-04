@@ -50,6 +50,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -69,9 +72,13 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-    //viewmodel & viewModelScope
+    //binding
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'androidx.activity:activity-ktx:1.7.1'
+    implementation 'androidx.fragment:fragment-ktx:1.5.7'
 
 
     //room Start
