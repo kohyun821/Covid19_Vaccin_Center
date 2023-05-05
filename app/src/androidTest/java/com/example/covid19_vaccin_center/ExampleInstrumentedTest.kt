@@ -21,4 +21,6 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.covid19_vaccin_center", appContext.packageName)
     }
+
+
 }

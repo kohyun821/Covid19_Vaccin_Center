@@ -15,8 +15,5 @@ interface VaccineDao {
     suspend fun insertVaccines(vaccines: List<Vaccine>)
 
     @Query("SELECT * FROM vaccine LIMIT 100")
-    fun getAllVaccines(): List<Vaccine>
-
-    @Query("SELECT * FROM vaccine LIMIT 100")
-    fun getAll(): LiveData<List<Vaccine>>
+    fun getAllVaccines(): Flow<List<Vaccine>>
 }

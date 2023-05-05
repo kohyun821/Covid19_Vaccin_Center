@@ -13,7 +13,7 @@ import com.example.covid19_vaccin_center.Splash.data.repository.VaccineRepositor
 
 class MapViewModel(private val repository: VaccineRepository) : ViewModel() {
 
-    fun getAllVaccines(): List<Vaccine> {
-        return repository.getAllVaccines()
+    fun getAllVaccines(): LiveData<List<Vaccine>> {
+        return repository.getAllVaccines().asLiveData()
     }
 }

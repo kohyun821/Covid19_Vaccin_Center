@@ -9,12 +9,11 @@ import kotlinx.coroutines.flow.Flow
 class VaccineRepository(private val context: Context) {
     private val vaccineDao = VaccineDatabase.getDatabase(context).vaccineDao()
 
-    val allContacts: LiveData<List<Vaccine>> = vaccineDao.getAll()
     suspend fun insertVaccines(vaccines: List<Vaccine>) {
         vaccineDao.insertVaccines(vaccines)
     }
 
-    fun getAllVaccines(): List<Vaccine> {
+    fun getAllVaccines(): Flow<List<Vaccine>> {
         return vaccineDao.getAllVaccines()
     }
 }
