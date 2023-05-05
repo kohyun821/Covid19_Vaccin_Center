@@ -5,11 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.ProgressBar
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import com.example.covid19_vaccin_center.Map.view.MapActivity
+import com.example.covid19_vaccin_center.map.view.MapActivity
 import com.example.covid19_vaccin_center.R
 import com.example.covid19_vaccin_center.Splash.data.repository.VaccineRepository
 import com.example.covid19_vaccin_center.Splash.viewmodel.SplashViewModel

@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.example.covid19_vaccin_center.map.viewmodel.MapViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,6 +31,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:gravity="left"
+            android:textSize="10sp"
+            android:text="@{viewModel.locationInfo}"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="~~~병원" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

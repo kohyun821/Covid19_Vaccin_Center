@@ -21,7 +21,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".Map.view.MapActivity"
+            android:name=".map.view.MapActivity"
             android:exported="false" />
         <activity
             android:name=".Splash.view.SplashActivity"

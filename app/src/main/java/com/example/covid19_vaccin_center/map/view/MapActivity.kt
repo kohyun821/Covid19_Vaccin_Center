@@ -1,17 +1,22 @@
-package com.example.covid19_vaccin_center.Map.view
+package com.example.covid19_vaccin_center.map.view
 
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.covid19_vaccin_center.BuildConfig
-import com.example.covid19_vaccin_center.Map.viewmodel.MapViewModel
+import com.example.covid19_vaccin_center.map.viewmodel.MapViewModel
+import com.example.covid19_vaccin_center.map.viewmodel.MapViewModelFactory
 import com.example.covid19_vaccin_center.R
 import com.example.covid19_vaccin_center.Splash.data.entity.Vaccine
 import com.example.covid19_vaccin_center.Splash.data.repository.VaccineRepository
+import com.example.covid19_vaccin_center.databinding.ActivityMapBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -19,14 +24,15 @@ import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 
 class MapActivity : FragmentActivity(),OnMapReadyCallback {
     private lateinit var viewModel: MapViewModel
+    private lateinit var binding: ActivityMapBinding
 
     val Vaccine_List = arrayListOf<Vaccine>()
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
-
     lateinit var floatingActionButton: FloatingActionButton
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -34,7 +40,15 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_map)
+//        setContentView(R.layout.activity_map)
+
+        val repository = VaccineRepository(this)
+        val viewModelFactory = MapViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MapViewModel::class.java)
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_map)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
         floatingActionButton = findViewById(R.id.fab_tracking)
 
@@ -58,8 +72,6 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
         floatingActionButton.setOnClickListener{
         }
 
-        val repository = VaccineRepository(this)
-        viewModel = MapViewModel(repository)
     }
 
 
@@ -71,12 +83,21 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
             Vaccine_List.forEach { vaccine ->
                 val marker = Marker().apply {
                     position = LatLng(vaccine.lat.toDouble(), vaccine.lng.toDouble())
+                    icon = MarkerIcons.BLACK
                     iconTintColor = getMarkerColor(vaccine.centerType)
                     map = naverMap
                     //여러개 겹치면 합쳐지게
                     isHideCollidedMarkers = true
                     width = 50
                     height = 80
+                }
+
+                marker.tag = vaccine
+                marker.setOnClickListener {
+                    val clieckedVaccine = it.tag as Vaccine
+                    viewModel.updateLocationInfo(clieckedVaccine)
+                    naverMap.moveCamera(CameraUpdate.scrollTo(marker.position))
+                    true
                 }
             }
         })
@@ -105,7 +126,7 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
 
     private fun getMarkerColor(centerType: String): Int {
         return when (centerType) {
-            "중앙/권역" -> Color.BLACK
+            "중앙/권역" -> Color.RED
             else -> Color.BLUE
         }
     }
