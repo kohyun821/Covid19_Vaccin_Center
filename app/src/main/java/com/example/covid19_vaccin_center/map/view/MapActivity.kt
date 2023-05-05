@@ -3,6 +3,8 @@ package com.example.covid19_vaccin_center.map.view
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
@@ -22,6 +24,7 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
@@ -33,45 +36,51 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
     val Vaccine_List = arrayListOf<Vaccine>()
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
+
     lateinit var floatingActionButton: FloatingActionButton
+
+    //선택 되었는지?
+    private var selectedMarker: Marker? = null
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_map)
 
         val repository = VaccineRepository(this)
         val viewModelFactory = MapViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MapViewModel::class.java)
 
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MapViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_map)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
         floatingActionButton = findViewById(R.id.fab_tracking)
 
-        //프라그먼트를 이용하여 네이버 지도 생성
+
+        setupMapFragment()
+        //네이버 지도 API키 입력
+        NaverMapSdk.getInstance(this).client =
+            NaverMapSdk.NaverCloudPlatformClient(BuildConfig.CLIENT_ID)
+        //위치 퍼미션 확인
+        locationSource =
+            FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
+
+        floatingActionButton.setOnClickListener{
+        }
+
+    }
+
+    //프라그먼트를 이용하여 네이버 지도 생성
+    private fun setupMapFragment() {
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
             ?: MapFragment.newInstance().also {
                 fm.beginTransaction().add(R.id.map, it).commit()
             }
-
-        //네이버 지도 API키 입력
-        NaverMapSdk.getInstance(this).client =
-            NaverMapSdk.NaverCloudPlatformClient(BuildConfig.CLIENT_ID)
-
         mapFragment.getMapAsync(this)
-
-        //위치 퍼미션 확인
-        locationSource =
-            FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-
-        floatingActionButton.setOnClickListener{
-        }
-
     }
 
 
@@ -92,15 +101,48 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
                     height = 80
                 }
 
+                Log.e("ClickTest","selectedMarker 1 $selectedMarker")
+                //정보창 안보이게~
+                binding.tvLocation.visibility = View.GONE
                 marker.tag = vaccine
                 marker.setOnClickListener {
                     val clieckedVaccine = it.tag as Vaccine
-                    viewModel.updateLocationInfo(clieckedVaccine)
-                    naverMap.moveCamera(CameraUpdate.scrollTo(marker.position))
+
+                    if (selectedMarker == it) {
+                        Log.e("ClickTest","selectedMarker IF $selectedMarker")
+                        if (binding.tvLocation.isVisible) {
+                            Log.e("ClickTest","selectedMarker isVisible $selectedMarker")
+                            binding.tvLocation.visibility = View.GONE
+                            marker.iconTintColor = getMarkerColor(vaccine.centerType)
+                            selectedMarker = null
+                        } else {
+                            Log.e("ClickTest","selectedMarker isVisible else $selectedMarker")
+                            viewModel.updateLocationInfo(clieckedVaccine)
+                            binding.tvLocation.visibility = View.VISIBLE
+                        }
+                    } else {
+                        Log.e("ClickTest","selectedMarker else $selectedMarker")
+                        resetSelectedMarkerColor()
+                        viewModel.updateLocationInfo(clieckedVaccine)
+                        selectedMarker = marker
+                        marker.iconTintColor = Color.GREEN
+                        naverMap.moveCamera(CameraUpdate.scrollTo(marker.position))
+                        binding.tvLocation.visibility = View.VISIBLE
+                    }
                     true
+//                    viewModel.updateLocationInfo(clieckedVaccine)
+//                    naverMap.moveCamera(CameraUpdate.scrollTo(marker.position))
+//                    selectedMarker?.iconTintColor = getMarkerColor((selectedMarker?.tag as Vaccine).centerType)
+//                    marker.iconTintColor = Color.GREEN
+//                    selectedMarker = marker
+//                    true
                 }
             }
         })
+    }
+
+    private fun resetSelectedMarkerColor() {
+        selectedMarker?.iconTintColor = getMarkerColor((selectedMarker?.tag as? Vaccine)?.centerType ?: "")
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
