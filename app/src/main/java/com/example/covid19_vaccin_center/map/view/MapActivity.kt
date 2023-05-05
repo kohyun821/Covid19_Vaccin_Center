@@ -101,7 +101,6 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
                     height = 80
                 }
 
-                Log.e("ClickTest","selectedMarker 1 $selectedMarker")
                 //정보창 안보이게~
                 binding.tvLocation.visibility = View.GONE
                 marker.tag = vaccine
@@ -109,19 +108,15 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
                     val clieckedVaccine = it.tag as Vaccine
 
                     if (selectedMarker == it) {
-                        Log.e("ClickTest","selectedMarker IF $selectedMarker")
                         if (binding.tvLocation.isVisible) {
-                            Log.e("ClickTest","selectedMarker isVisible $selectedMarker")
                             binding.tvLocation.visibility = View.GONE
                             marker.iconTintColor = getMarkerColor(vaccine.centerType)
                             selectedMarker = null
                         } else {
-                            Log.e("ClickTest","selectedMarker isVisible else $selectedMarker")
                             viewModel.updateLocationInfo(clieckedVaccine)
                             binding.tvLocation.visibility = View.VISIBLE
                         }
                     } else {
-                        Log.e("ClickTest","selectedMarker else $selectedMarker")
                         resetSelectedMarkerColor()
                         viewModel.updateLocationInfo(clieckedVaccine)
                         selectedMarker = marker
@@ -130,12 +125,6 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
                         binding.tvLocation.visibility = View.VISIBLE
                     }
                     true
-//                    viewModel.updateLocationInfo(clieckedVaccine)
-//                    naverMap.moveCamera(CameraUpdate.scrollTo(marker.position))
-//                    selectedMarker?.iconTintColor = getMarkerColor((selectedMarker?.tag as Vaccine).centerType)
-//                    marker.iconTintColor = Color.GREEN
-//                    selectedMarker = marker
-//                    true
                 }
             }
         })
@@ -159,7 +148,6 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
     }
 
     override fun onMapReady(naverMap: NaverMap) {
-        Log.d("Vaccine","onMapReady!!")
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
 
