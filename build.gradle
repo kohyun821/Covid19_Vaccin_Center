@@ -8,3 +8,15 @@ plugins {
     1.8.0-1.0.9 은 버그가 있어서 JVM에러 발생함!*/
     id 'com.google.dagger.hilt.android' version '2.44' apply false
 }
+allprojects {
+    repositories {
+        // Other repositories...
+//        google()
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            force 'com.google.android.gms:play-services-location:17.1.0'
+        }
+    }
+}

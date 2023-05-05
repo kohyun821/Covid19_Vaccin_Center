@@ -28,22 +28,29 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
+import com.naver.maps.map.CameraAnimation
 
 class MapActivity : FragmentActivity(),OnMapReadyCallback {
     private lateinit var viewModel: MapViewModel
     private lateinit var binding: ActivityMapBinding
 
     val Vaccine_List = arrayListOf<Vaccine>()
-    private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
 
     lateinit var floatingActionButton: FloatingActionButton
 
     //선택 되었는지?
     private var selectedMarker: Marker? = null
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-    }
+
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    private lateinit var locationSource: FusedLocationSource
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,15 +70,48 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
         //네이버 지도 API키 입력
         NaverMapSdk.getInstance(this).client =
             NaverMapSdk.NaverCloudPlatformClient(BuildConfig.CLIENT_ID)
-        //위치 퍼미션 확인
-        locationSource =
-            FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-
-        floatingActionButton.setOnClickListener{
+        floatingActionButton.setOnClickListener {
+            checkLocationPermission()
         }
 
     }
+
+    private fun enableLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            naverMap.locationTrackingMode = LocationTrackingMode.Follow
+            naverMap.addOnLocationChangeListener { location ->
+                val latLng = LatLng(location.latitude, location.longitude)
+                naverMap.moveCamera(CameraUpdate.scrollTo(latLng).animate(CameraAnimation.Fly))
+            }
+        }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+                enableLocation()
+            } else {
+                Toast.makeText(this, "Location permission is required", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            enableLocation()
+        }
+    }
+
 
     //프라그먼트를 이용하여 네이버 지도 생성
     private fun setupMapFragment() {
@@ -134,23 +174,12 @@ class MapActivity : FragmentActivity(),OnMapReadyCallback {
         selectedMarker?.iconTintColor = getMarkerColor((selectedMarker?.tag as? Vaccine)?.centerType ?: "")
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-        if (locationSource.onRequestPermissionsResult(requestCode, permissions,
-                grantResults)) {
-            if (!locationSource.isActivated) { // 권한 거부됨
-                naverMap.locationTrackingMode = LocationTrackingMode.None
-            }
-            return
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         naverMap.locationSource = locationSource
-
+        naverMap.locationTrackingMode = LocationTrackingMode.None
         getData()
     }
 

@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        jcenter()
         //For naver MAP API
         maven {
             url 'https://naver.jfrog.io/artifactory/maven/'
